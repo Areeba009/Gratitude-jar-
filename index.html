@@ -3,180 +3,214 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gratitude Jar</title>
-  <link rel="manifest" href="manifest.json">
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(() => console.log('Service Worker Registered'));
-  }
-</script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <title>BlissJar</title>
+
+  <!-- PWA Support -->
+  <link rel="manifest" href="manifest.json" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('Service Worker Registered'));
+    }
+  </script>
+
+  <!-- Icon -->
+  <link rel="icon" type="image/png" href="icon.png" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet" />
+
   <style>
-    html { font-family: 'Poppins', sans-serif; }
+    :root {
+      --bg-color: #fff0f7;
+      --text-color: #333;
+      --jar-bg: #ffb6c1;
+      --input-bg: #fff;
+    }
+
+    body.dark {
+      --bg-color: #1a1a1a;
+      --text-color: #fff;
+      --jar-bg: #333;
+      --input-bg: #2a2a2a;
+    }
+
     body {
-      background: linear-gradient(135deg, #ffe4ec, #ffd6f0);
-      background-size: 400% 400%;
-      animation: pastelShift 15s ease infinite;
-      color: #333;
-      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+      font-family: 'Quicksand', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
     }
-    @keyframes pastelShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+
     h1 {
-      font-family: 'Pacifico', cursive;
-      color: #d63384;
+      margin-bottom: 20px;
     }
+
     .jar {
-      width: 160px; height: 220px;
-      border-radius: 80px 80px 20px 20px;
-      background: radial-gradient(circle at 50% 30%, #fff, #ffe6f0);
-      box-shadow: inset 0 0 15px rgba(255, 192, 203, 0.3), 0 10px 30px rgba(0, 0, 0, 0.1);
-      border: 3px solid #f8bbd0;
-      position: relative; overflow: hidden;
+      width: 150px;
+      height: 200px;
+      background: var(--jar-bg);
+      border-radius: 20px 20px 60px 60px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      margin: 20px 0;
     }
+
     .jar-fill {
-      position: absolute; bottom: 0; width: 100%;
-      background: linear-gradient(to top, #ffb6c1, #ffc8dd);
-      transition: height 0.6s ease-in-out;
-      border-top-left-radius: 80px; border-top-right-radius: 80px;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(to top, #ff69b4, #ffc0cb);
+      transition: height 0.5s ease-in-out;
     }
-    .glitter {
-      position: absolute; width: 6px; height: 6px;
-      background: yellow; border-radius: 50%; opacity: 0.6;
-      animation: sparkle 1.5s infinite ease-in-out;
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 90%;
+      max-width: 300px;
     }
-    @keyframes sparkle {
-      0% { transform: translateY(0) scale(1); opacity: 0.7; }
-      50% { transform: translateY(-10px) scale(1.2); opacity: 1; }
-      100% { transform: translateY(0) scale(1); opacity: 0.6; }
+
+    input {
+      padding: 10px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      width: 100%;
+      border-radius: 10px;
+      background: var(--input-bg);
+      color: var(--text-color);
+      margin-bottom: 10px;
     }
-    input:focus {
-      border-color: #f783ac; outline: none;
-      box-shadow: 0 0 0 2px rgba(247, 131, 172, 0.3);
-    }
-    #addBtn {
-      background-color: #f783ac;
-    }
-    #addBtn:hover {
-      background-color: #e64980;
-    }
-    .container {
-      background: rgba(255, 255, 255, 0.8);
+
+    button {
+      background: #ff69b4;
+      color: white;
+      border: none;
+      padding: 10px 20px;
       border-radius: 20px;
-      padding: 2rem;
-      box-shadow: 0 8px 20px rgba(255, 105, 180, 0.1);
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
     }
-    .dark body {
-      background: linear-gradient(to bottom right, #1e1e1e, #2c2c2c);
-      color: #f1f1f1;
+
+    button:hover {
+      background: #ff85c1;
     }
-    .dark .container {
-      background: rgba(30, 30, 30, 0.8);
+
+    .glitter {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
     }
-    .dark .jar {
-      background: radial-gradient(circle at 50% 30%, #333, #444);
-      border-color: #999;
+
+    .glitter span {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: yellow;
+      border-radius: 50%;
+      animation: glitter 1s ease-out forwards;
     }
-    .dark .jar-fill {
-      background: linear-gradient(to top, #d63384, #f783ac);
+
+    @keyframes glitter {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-60px) scale(0.5); opacity: 0; }
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      color: var(--text-color);
+      border: 1px solid var(--text-color);
+      padding: 5px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 500px) {
+      h1 {
+        font-size: 20px;
+      }
+      .jar {
+        width: 120px;
+        height: 160px;
+      }
     }
   </style>
 </head>
-<body class="transition-colors duration-500 min-h-screen flex items-center justify-center p-4">
-  <div class="w-full max-w-md mx-auto container">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-4xl">Gratitude Jar</h1>
-      <button id="themeToggle" class="text-sm border px-3 py-1 rounded">🌓</button>
-    </div>
-    <label for="gratitude" class="block mb-2 text-lg font-semibold text-pink-700">I'm grateful for...</label>
-    <input id="gratitude" type="text" placeholder="my cat, sunny days..." class="w-full px-4 py-2 border rounded border-pink-200 mb-4 bg-black text-white dark:bg-black dark:text-white" />
-    <button id="addBtn" class="hover:bg-pink-600 text-white font-semibold px-4 py-2 rounded w-full mb-6">Add to Jar</button>
-    <div class="flex justify-center mb-6 relative">
-      <div class="jar">
-        <div id="jarFill" class="jar-fill" style="height: 0%"></div>
-      </div>
-      <div id="glitterContainer" class="absolute w-full h-full pointer-events-none"></div>
-    </div>
-    <ul id="gratitudeList" class="space-y-2 text-base list-disc list-inside text-pink-800"></ul>
+
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()">☀️/🌙</button>
+
+  <h1>I'm grateful for...</h1>
+
+  <div class="jar">
+    <div class="jar-fill" id="jarFill"></div>
+    <div class="glitter" id="glitter"></div>
   </div>
 
-  <audio id="fillSound" preload="auto">
-    <source src="https://file.garden/aHAgEXUOCHcga_fb/Glittery.mp3" type="audio/mpeg">
-  </audio>
+  <div class="input-group">
+    <input type="text" id="gratitudeInput" placeholder="Type your gratitude here..." />
+    <button onclick="addGratitude()">Add to Jar</button>
+  </div>
+
+  <audio id="glitterSound" src="https://file.garden/aHAgEXUOCHcga_fb/Glittery.mp3" preload="auto"></audio>
 
   <script>
-    const gratitudeInput = document.getElementById("gratitude");
-    const addBtn = document.getElementById("addBtn");
-    const gratitudeList = document.getElementById("gratitudeList");
-    const jarFill = document.getElementById("jarFill");
-    const fillSound = document.getElementById("fillSound");
-    const themeToggle = document.getElementById("themeToggle");
-    const html = document.documentElement;
-    const glitterContainer = document.getElementById("glitterContainer");
+    let fillPercent = 0;
+    const jarFill = document.getElementById('jarFill');
+    const glitter = document.getElementById('glitter');
+    const glitterSound = document.getElementById('glitterSound');
 
-    let gratitudeItems = JSON.parse(localStorage.getItem("gratitudeItems")) || [];
-    gratitudeItems.forEach(addItemToUI);
-    updateJarFill();
+    function addGratitude() {
+      const input = document.getElementById('gratitudeInput');
+      const value = input.value.trim();
 
-    themeToggle.addEventListener("click", () => {
-      html.classList.toggle("dark");
-    });
+      if (!value) return;
 
-    addBtn.addEventListener("click", () => {
-      const text = gratitudeInput.value.trim();
-      if (!text) return;
+      // Store in localStorage
+      let stored = JSON.parse(localStorage.getItem('gratitudes') || '[]');
+      stored.push(value);
+      localStorage.setItem('gratitudes', JSON.stringify(stored));
 
-      gratitudeItems.push(text);
-      localStorage.setItem("gratitudeItems", JSON.stringify(gratitudeItems));
-      addItemToUI(text);
-      updateJarFill();
-      playSound();
-      sparkleGlitter();
-      gratitudeInput.value = "";
+      // Fill jar
+      fillPercent += 10;
+      if (fillPercent > 100) fillPercent = 0;
+      jarFill.style.height = fillPercent + '%';
 
-      if (gratitudeItems.length >= 10) {
-        setTimeout(() => {
-          alert("🎉 Your jar is full! Let's empty it and start again.");
-          gratitudeItems = [];
-          localStorage.removeItem("gratitudeItems");
-          gratitudeList.innerHTML = "";
-          updateJarFill();
-        }, 800);
-      }
-    });
+      // Play glitter sound
+      glitterSound.currentTime = 0;
+      glitterSound.play().catch(() => {});
 
-    function playSound() {
-      fillSound.pause();
-      fillSound.currentTime = 0;
-      fillSound.play().catch(e => console.log("Sound error:", e));
-    }
-
-    function addItemToUI(text) {
-      const li = document.createElement("li");
-      li.textContent = text;
-      gratitudeList.appendChild(li);
-    }
-
-    function updateJarFill() {
-      const percent = Math.min(gratitudeItems.length * 10, 100);
-      jarFill.style.height = percent + "%";
-    }
-
-    function sparkleGlitter() {
+      // Add glitter effect
       for (let i = 0; i < 10; i++) {
-        const sparkle = document.createElement("div");
-        sparkle.classList.add("glitter");
-        sparkle.style.left = Math.random() * 100 + "%";
-        sparkle.style.top = Math.random() * 100 + "%";
-        glitterContainer.appendChild(sparkle);
-        setTimeout(() => sparkle.remove(), 1500);
+        const sparkle = document.createElement('span');
+        sparkle.style.left = Math.random() * 100 + '%';
+        sparkle.style.bottom = '0';
+        glitter.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 1000);
       }
+
+      input.value = '';
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
     }
   </script>
 </body>
-        </html>
+</html>
